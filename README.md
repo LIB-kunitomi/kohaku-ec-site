@@ -21,4 +21,6 @@ http://localhost:5178 を開きます。公開時と同じ枠（doctype・viewpo
 ## 公開ページ
 - GitHub Pages：https://lib-kunitomi.github.io/kohaku-ec-site/
   - main に push すると、GitHub Actions（`.github/workflows/pages.yml`）が `scripts/build.js` で `_site/index.html` を作って自動で公開します。
+- Vercel：https://kohaku-ec-site.vercel.app （チーム LIB の kohaku-ec-site プロジェクト）
+  - 手元から `vercel deploy --prod --scope lib-5343` で公開します。ビルド設定は `vercel.json`（`scripts/build.js` で `_site` を作る）。
 - Claude の Artifact としても公開しています（非公開・共有はページの共有メニューから）。
