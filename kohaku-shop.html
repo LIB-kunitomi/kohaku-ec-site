@@ -6,17 +6,17 @@
 /* Layout: 余白の多いショーウィンドウ型。ヒーロー → カテゴリ → 商品棚 → 店舗 → サービス → ブランド */
 :root{
   --bg:#EDEFEA; --surface:#F7F8F5; --ink:#1E2320; --muted:#5E6762; --line:#D3D8D2;
-  --accent:#2E4A3B; --accent-ink:#F4F6F2; --sale:#8E2B2B; --shade:rgba(30,35,32,.45);
+  --accent:#2E4A3B; --accent-ink:#F4F6F2; --sale:#8E2B2B; --sale-ink:#FBF4F2; --shade:rgba(30,35,32,.45);
   --f-display:"Bodoni Moda", "Times New Roman", serif;
   --f-body:"Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
   --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#161A18; --surface:#1F2421; --ink:#E7EAE5; --muted:#9BA49E; --line:#323A35;
-  --accent:#9CC2AA; --accent-ink:#13201A; --sale:#E08A80; --shade:rgba(0,0,0,.6); color-scheme:dark}}
+  --accent:#9CC2AA; --accent-ink:#13201A; --sale:#E08A80; --sale-ink:#2B1210; --shade:rgba(0,0,0,.6); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#161A18; --surface:#1F2421; --ink:#E7EAE5; --muted:#9BA49E; --line:#323A35;
-  --accent:#9CC2AA; --accent-ink:#13201A; --sale:#E08A80; --shade:rgba(0,0,0,.6); color-scheme:dark}
+  --accent:#9CC2AA; --accent-ink:#13201A; --sale:#E08A80; --sale-ink:#2B1210; --shade:rgba(0,0,0,.6); color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
@@ -34,13 +34,31 @@ h2{font-size:clamp(22px,3vw,30px);letter-spacing:.04em}
 .notice{background:var(--accent);color:var(--accent-ink);font-size:12px;text-align:center}
 .notice .wrap{padding-block:7px;letter-spacing:.06em}
 header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);border-bottom:1px solid var(--line)}
-header.site .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding-block:14px}
+.bar{display:grid;grid-template-columns:1fr auto 1fr;grid-template-areas:"left logo right";align-items:center;gap:12px 16px;padding-block:14px}
+.left-tools{grid-area:left;display:flex;align-items:center;gap:10px;min-width:0}
+.bar .logo{grid-area:logo}
+.menu-btn{display:none!important}
 .logo{font-family:var(--f-display);font-size:26px;letter-spacing:.32em;text-decoration:none;text-align:center;padding-left:.32em}
 .logo small{display:block;font-family:var(--f-mono);font-size:9px;letter-spacing:.3em;color:var(--muted);margin-top:-4px}
-nav.cats-top{display:flex;gap:20px;font-size:13px}
-nav.cats-top button{background:none;border:0;padding:0;letter-spacing:.06em}
-nav.cats-top button:hover{color:var(--accent)}
-.tools{display:flex;justify-content:flex-end;align-items:center;gap:10px}
+.tools{grid-area:right;display:flex;justify-content:flex-end;align-items:center;gap:10px}
+
+/* main nav + mega menu */
+nav.main{border-top:1px solid var(--line)}
+nav.main ul{list-style:none;margin:0;padding:0;display:flex;justify-content:center;flex-wrap:wrap;gap:0 28px}
+nav.main button{background:none;border:0;border-bottom:2px solid transparent;padding:11px 0 9px;font-size:13px;letter-spacing:.06em}
+nav.main button:hover,nav.main button[aria-expanded="true"]{border-bottom-color:var(--accent);color:var(--accent)}
+nav.main .hl{color:var(--sale)}
+.mega{position:absolute;left:0;right:0;top:100%;background:var(--bg);border-block:1px solid var(--line);box-shadow:0 18px 30px -24px var(--shade)}
+.mega .wrap{display:grid;grid-template-columns:1fr 1fr 2fr;gap:32px;padding-block:28px 32px}
+.mega h4{margin:0}
+.mega ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.lk{background:none;border:0;padding:0;font-size:14px;text-align:left}
+.lk:hover{color:var(--accent);text-decoration:underline}
+.lk.strong{font-weight:700;margin-top:6px}
+.lk .n{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-left:6px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tile{background:none;border:0;padding:0;display:grid;gap:4px;text-align:left;font-size:13px;line-height:1.5;align-content:start}
+.tile .thumb{aspect-ratio:4/3}
 .search{display:flex;align-items:center;border:1px solid var(--line);background:var(--surface);padding:0 10px;height:36px;min-width:0}
 .search input{border:0;background:none;outline:none;width:180px;font:inherit;font-size:13px;color:var(--ink)}
 .icon-btn{position:relative;width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface)}
@@ -78,10 +96,14 @@ section.block{padding-block:72px}
 
 /* product grid */
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px 20px}
-.card{display:grid;gap:10px;background:none;border:0;padding:0;text-align:left}
+.card{display:grid;gap:10px;align-content:start;min-width:0}
+.card-link{display:grid;gap:10px;background:none;border:0;padding:0;text-align:left}
 .thumb{position:relative;aspect-ratio:4/5;max-width:100%;background:var(--surface);overflow:hidden}
 .thumb svg{width:100%;height:100%;display:block;transition:transform .5s ease}
-.card:hover .thumb svg{transform:scale(1.04)}
+.card-link:hover .thumb svg,.tile:hover .thumb svg{transform:scale(1.04)}
+.count{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-left:10px;letter-spacing:0}
+.active-filter{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--accent);color:var(--accent);padding:0 2px 0 14px;font-size:13px}
+.active-filter button{background:none;border:0;width:30px;height:30px}
 .flag{position:absolute;top:10px;left:10px;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;padding:2px 8px;background:var(--bg)}
 .flag.sale{color:var(--sale)}
 .flag.soldout{background:var(--ink);color:var(--bg)}
@@ -89,7 +111,10 @@ section.block{padding-block:72px}
 .card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .swatches{display:flex;gap:4px;align-items:center;flex-shrink:0}
 .card .meta{flex-wrap:wrap;row-gap:4px}
-.sw{width:12px;height:12px;border-radius:50%;border:1px solid var(--line)}
+.swatches{gap:7px}
+.sw{position:relative;width:14px;height:14px;border-radius:50%;border:1px solid var(--line);padding:0}
+.sw::after{content:"";position:absolute;inset:-6px}
+.sw[aria-pressed="true"]{outline:1px solid var(--ink);outline-offset:2px}
 .more{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
 .empty{grid-column:1/-1;padding:48px 0;text-align:center;color:var(--muted)}
 
@@ -177,79 +202,182 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px;
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 20px;font-size:13px;z-index:30;opacity:0;transition:.25s;pointer-events:none;max-width:calc(100% - 32px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
+/* slideshow */
+.slides{position:relative}
+.slides .hero-copy{padding-bottom:72px}
+.slide{animation:fadein .6s ease}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.dots{position:absolute;right:max(16px,5vw);bottom:20px;display:flex;align-items:center;gap:6px}
+.dots [data-slide]{width:32px;height:24px;border:0;padding:0;background:linear-gradient(var(--line),var(--line)) center/100% 3px no-repeat}
+.dots [data-slide][aria-current="true"]{background-image:linear-gradient(var(--ink),var(--ink))}
+.dots .pause{width:30px;height:30px;margin-left:8px;border:1px solid var(--line);background:var(--bg);padding:0;display:grid;place-items:center;font-size:10px}
+
+/* sale band + rail */
+.sale-band{background:var(--sale);color:var(--sale-ink)}
+.sale-band .wrap{display:grid;grid-template-columns:1.1fr 1fr auto;gap:20px 40px;align-items:center;padding-block:40px}
+.sale-band .eyebrow{color:inherit;opacity:.85}
+.sale-band h2{font-family:var(--f-display);margin-top:6px;line-height:1.35}
+.sale-band p{margin:0;opacity:.92;max-width:30em}
+.btn.light{background:var(--sale-ink);color:var(--sale);border-color:var(--sale-ink)}
+.btn.light:hover{background:none;color:var(--sale-ink);border-color:var(--sale-ink)}
+.arrows{display:flex;gap:8px}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 60px)/4);gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;padding-bottom:14px}
+.rail>.card{scroll-snap-align:start}
+#shop,#stores,#services{scroll-margin-top:120px}
+
+/* mobile menu + promo */
+.drawer.left{right:auto;left:0;transform:translateX(-100%);padding-left:max(20px,env(safe-area-inset-left,0px))}
+.drawer.left.open{transform:none}
+.mnav{flex:1;overflow:auto;padding-block:4px}
+.mnav details,.mnav .plain{border-bottom:1px solid var(--line)}
+.mnav summary{list-style:none;display:flex;justify-content:space-between;padding:14px 0;cursor:pointer;font-size:15px}
+.mnav summary::-webkit-details-marker{display:none}
+.mnav summary::after{content:"+";font-family:var(--f-mono);color:var(--muted)}
+.mnav details[open] summary::after{content:"−"}
+.mnav .lk{display:block;width:100%;padding:9px 14px;color:var(--muted)}
+.mnav details .lk:last-child{margin-bottom:10px}
+.mnav .plain{display:block;width:100%;text-align:left;background:none;border-inline:0;border-top:0;padding:14px 0;font-size:15px}
+.mnav .plain.hl{color:var(--sale)}
+.dialog.promo{width:min(760px,100%)}
+.promo .hero-art{min-height:320px}
+.promo form{display:grid;gap:8px}
+.promo input{height:46px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;padding:0 14px}
+
 @media (max-width:960px){
-  nav.cats-top{display:none}
-  header.site .wrap{grid-template-columns:auto 1fr}
-  .logo{text-align:left;padding-left:0}
+  .menu-btn{display:grid!important}
+  nav.main{display:none}
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .services{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sale-band .wrap{grid-template-columns:1fr;justify-items:start}
+  .rail{grid-auto-columns:calc((100% - 40px)/3)}
+  #shop,#stores,#services{scroll-margin-top:80px}
 }
 @media (max-width:720px){
+  .bar{grid-template-columns:auto 1fr auto;grid-template-areas:"left logo right" "search search search"}
+  .left-tools{display:contents}
+  .menu-btn{grid-area:left}
+  .search{grid-area:search}
+  .search input{width:100%}
   .hero,.leather .wrap,.about,.dialog{grid-template-columns:1fr}
   .hero-art{min-height:300px}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 12px}
+  .rail{grid-auto-columns:62%;gap:12px}
   .stores{grid-template-columns:1fr}
-  .search input{width:100%}
-  .search{flex:1}
   footer .wrap{grid-template-columns:1fr 1fr}
   footer .brand{grid-column:1/-1}
   section.block{padding-block:52px}
   .dialog .art{min-height:280px}
+  .promo .hero-art{min-height:200px}
   .dialog .body{padding:24px 20px}
+  #shop,#stores,#services{scroll-margin-top:130px}
 }
 @media (max-width:480px){
-  header.site .wrap{grid-template-columns:1fr auto;row-gap:10px}
   .logo{font-size:20px}
-  .tools{display:contents}
-  .search{grid-column:1/-1;grid-row:2;order:3}
-  .icon-btn{grid-column:2;grid-row:1}
   .hero-art{min-height:260px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
-<div class="notice"><div class="wrap">ホリデーギフト受付中 ／ ¥22,000以上で送料無料 ／ 刻印・ラッピング無料</div></div>
+<div class="notice"><div class="wrap">ウィンターセール開催中 最大20%OFF（12/1まで） ／ ¥22,000以上で送料無料 ／ 刻印・ラッピング無料</div></div>
 
 <header class="site">
-  <div class="wrap">
-    <nav class="cats-top" aria-label="カテゴリ">
-      <button data-jump="case">スマホケース</button>
-      <button data-jump="bag">バッグ</button>
-      <button data-jump="wallet">財布</button>
-      <button data-jump="small">小物</button>
-    </nav>
-    <a class="logo" href="#top" aria-label="KOHAKU トップ">KOHAKU<small>LEATHER ATELIER</small></a>
-    <div class="tools">
+  <div class="wrap bar">
+    <div class="left-tools">
+      <button class="icon-btn menu-btn" id="openMenu" aria-label="メニューを開く">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
       <label class="search" for="q">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-        <input id="q" type="search" placeholder="商品を検索">
+        <input id="q" type="search" placeholder="キーワードで検索（例：バッグ）">
       </label>
+    </div>
+    <a class="logo" href="#top" aria-label="KOHAKU トップ">KOHAKU<small>LEATHER ATELIER</small></a>
+    <div class="tools">
       <button class="icon-btn" id="openCart" aria-label="カートを開く">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
         <span class="badge" id="cartCount" data-n="0">0</span>
       </button>
     </div>
   </div>
+  <nav class="main" aria-label="メインメニュー">
+    <ul>
+      <li><button data-go="all||new">新作</button></li>
+      <li><button data-mega="case" data-go="case" aria-expanded="false" aria-controls="mega">スマホケース</button></li>
+      <li><button data-mega="bag" data-go="bag" aria-expanded="false" aria-controls="mega">バッグ</button></li>
+      <li><button data-mega="wallet" data-go="wallet" aria-expanded="false" aria-controls="mega">財布・カードケース</button></li>
+      <li><button data-mega="small" data-go="small" aria-expanded="false" aria-controls="mega">小物</button></li>
+      <li><button data-go="all||gift">ギフト</button></li>
+      <li><button class="hl" data-go="all||sale">セール</button></li>
+      <li><button data-scroll="stores">店舗</button></li>
+      <li><button data-scroll="services">サービス・修理</button></li>
+    </ul>
+  </nav>
+  <div class="mega" id="mega" hidden></div>
 </header>
 
 <main id="top">
-  <section class="hero">
-    <div class="hero-art" id="heroArt" aria-hidden="true"></div>
-    <div class="hero-copy">
-      <span class="tag-sale">HOLIDAY 2026 ／ 11.20 – 12.25</span>
-      <h1><span class="nw">贈る人の名前を、</span><span class="nw">革に刻む</span><span class="nw">ホリデー。</span></h1>
-      <p>イタリア・トスカーナのタンナーから届いたシュリンクレザーで仕立てる冬の新作。イニシャル刻印とギフトボックスは無料で承ります。</p>
-      <div class="row">
-        <button class="btn" data-jump="bag">新作バッグを見る</button>
-        <button class="btn ghost" data-filter-tag="gift">ギフトを探す</button>
+  <section class="slides" aria-roledescription="carousel" aria-label="特集">
+    <div class="hero slide" aria-roledescription="slide" aria-label="1 / 3">
+      <div class="hero-art" data-scene="0" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <span class="tag-sale">HOLIDAY 2026 ／ 11.20 – 12.25</span>
+        <h1><span class="nw">贈る人の名前を、</span><span class="nw">革に刻む</span><span class="nw">ホリデー。</span></h1>
+        <p>イタリア・トスカーナのタンナーから届いたシュリンクレザーで仕立てる冬の新作。イニシャル刻印とギフトボックスは無料で承ります。</p>
+        <div class="row">
+          <button class="btn" data-go="bag">新作バッグを見る</button>
+          <button class="btn ghost" data-go="all||gift">ギフトを探す</button>
+        </div>
       </div>
+    </div>
+    <div class="hero slide" aria-roledescription="slide" aria-label="2 / 3" hidden>
+      <div class="hero-art" data-scene="1" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <span class="tag-sale">GIFT FOR HER</span>
+        <h1><span class="nw">毎日持ち歩くものを、</span><span class="nw">少しいい革に。</span></h1>
+        <p>長財布とスマホが入るミニショルダーと、スマホの背面に付けるカードケース。軽くて、使うほどに手になじみます。</p>
+        <div class="row">
+          <button class="btn" data-go="bag|shoulder">ショルダーバッグを見る</button>
+          <button class="btn ghost" data-go="small|card">カードケースを見る</button>
+        </div>
+      </div>
+    </div>
+    <div class="hero slide" aria-roledescription="slide" aria-label="3 / 3" hidden>
+      <div class="hero-art" data-scene="2" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <span class="tag-sale">UNDER ¥20,000</span>
+        <h1><span class="nw">2万円以下で選ぶ、</span><span class="nw">小さなギフト。</span></h1>
+        <p>キーケース、カードケース、Apple Watch バンド。イニシャルを刻印すれば、名前入りの贈り物になります。</p>
+        <div class="row">
+          <button class="btn" data-go="all|||20000">¥20,000以下の商品を見る</button>
+          <button class="btn ghost" data-go="small">小物をすべて見る</button>
+        </div>
+      </div>
+    </div>
+    <div class="dots" id="dots"></div>
+  </section>
+
+  <section class="sale-band">
+    <div class="wrap">
+      <div><span class="eyebrow">Winter Sale ／ 11.20 – 12.01</span><h2>ウィンターセール<br>対象商品が最大20%OFF</h2></div>
+      <p>人気のトートやクロスボディも対象です。刻印とギフトラッピングは、セール品でも無料で承ります。</p>
+      <button class="btn light" data-go="all||sale">セール品をすべて見る</button>
+    </div>
+  </section>
+
+  <section class="block" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="left"><span class="eyebrow">Sale Items</span><h2>セール対象商品</h2></div>
+        <div class="arrows"><button class="icon-btn" data-rail="-1" aria-label="前の商品へ">←</button><button class="icon-btn" data-rail="1" aria-label="次の商品へ">→</button></div>
+      </div>
+      <div class="rail" id="rail"></div>
     </div>
   </section>
 
   <section class="block" id="shop">
     <div class="wrap">
       <div class="sec-head">
-        <div class="left"><span class="eyebrow">Collection</span><h2>コレクション</h2></div>
+        <div class="left"><span class="eyebrow">Collection</span><h2>コレクション<span class="count" id="count"></span></h2></div>
         <div class="sortbox"><label for="sort">並び替え</label>
           <select id="sort">
             <option value="new">新着順</option>
@@ -278,7 +406,7 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px;
     </div>
   </section>
 
-  <section class="block">
+  <section class="block" id="stores">
     <div class="wrap">
       <div class="sec-head"><div class="left"><span class="eyebrow">Our Stores</span><h2>店舗</h2></div></div>
       <div class="stores">
@@ -289,7 +417,7 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px;
     </div>
   </section>
 
-  <section class="block" style="padding-top:0">
+  <section class="block" id="services" style="padding-top:0">
     <div class="wrap">
       <div class="sec-head"><div class="left"><span class="eyebrow">Services</span><h2>KOHAKUのサービス</h2></div></div>
       <div class="services">
@@ -340,6 +468,30 @@ footer .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px;
   <div class="totals" id="totals"></div>
 </aside>
 
+<!-- mobile menu -->
+<aside class="drawer left" id="menu" aria-label="メニュー" aria-hidden="true">
+  <div class="drawer-head"><span class="logo" style="font-size:20px;text-align:left;padding-left:0">KOHAKU</span><button class="icon-btn" data-close-menu aria-label="メニューを閉じる">✕</button></div>
+  <nav class="mnav" id="mnav" aria-label="カテゴリ"></nav>
+</aside>
+
+<!-- newsletter coupon popup -->
+<div class="modal" id="promo" hidden role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+  <div class="dialog promo">
+    <button class="close" data-close-promo aria-label="閉じる">✕</button>
+    <div class="art hero-art" data-scene="1" aria-hidden="true"></div>
+    <div class="body">
+      <span class="eyebrow">Newsletter</span>
+      <h3 id="promoTitle">ニュースレター登録で<br>初回のお買い物が10%OFF</h3>
+      <p class="desc">新作とセールのお知らせを月2回お送りします。クーポンは登録したメールアドレスに届きます。</p>
+      <form id="promoForm">
+        <input type="email" required placeholder="メールアドレス" autocomplete="email" aria-label="メールアドレス">
+        <button class="btn" type="submit">クーポンを受け取る</button>
+      </form>
+      <button class="linkbtn" data-close-promo>今はしない</button>
+    </div>
+  </div>
+</div>
+
 <!-- product modal -->
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle"></div>
 
@@ -354,29 +506,29 @@ const COLORS = {
   forest:["フォレスト","#2f4a3b"], sky:["スカイ","#8fa9bf"], amber:["アンバー","#b9802e"]
 };
 const P = [
-  {id:"p01",cat:"case",show:"cognac",name:"(iPhone 17) マグネット ダイアリーケース シュリンクレザー",price:28600,colors:["noir","taupe","cognac","bordeaux","navy","greige","rose","forest","sky","amber"],tags:["new","gift"],
+  {id:"p01",sub:"iphone",cat:"case",show:"cognac",name:"(iPhone 17) マグネット ダイアリーケース シュリンクレザー",price:28600,colors:["noir","taupe","cognac","bordeaux","navy","greige","rose","forest","sky","amber"],tags:["new","gift"],
    desc:"MagSafe対応。ケース本体を外さずに充電でき、カードポケットは3枚まで入ります。",spec:{"サイズ":"W82 × H160 × D16 mm","素材":"牛革（シュリンクレザー）","対応":"iPhone 17 / 17 Pro"}},
-  {id:"p02",cat:"bag",show:"taupe",name:"リラ トートバッグ シュリンクレザー（30サイズ）",price:198000,sale:178200,colors:["noir","taupe","greige","bordeaux"],tags:["new"],
+  {id:"p02",sub:"tote",cat:"bag",show:"taupe",name:"リラ トートバッグ シュリンクレザー（30サイズ）",price:198000,sale:178200,colors:["noir","taupe","greige","bordeaux"],tags:["new"],
    desc:"A4ファイルが入る、マチ12cmのトート。内側にファスナーポケットとキーフックがあります。",spec:{"サイズ":"W30 × H26 × D12 cm","重さ":"約720 g","素材":"牛革（シュリンクレザー）"}},
-  {id:"p03",cat:"bag",v:"shoulder",show:"ivory",name:"ノエ ミニショルダー シュリンクレザー",price:96800,colors:["noir","ivory","olive","cognac"],tags:["new","gift"],
+  {id:"p03",sub:"shoulder",cat:"bag",v:"shoulder",show:"ivory",name:"ノエ ミニショルダー シュリンクレザー",price:96800,colors:["noir","ivory","olive","cognac"],tags:["new","gift"],
    desc:"長財布とスマホが入るミニショルダー。ストラップは3段階で長さを変えられます。",spec:{"サイズ":"W21 × H15 × D7 cm","重さ":"約380 g","ストラップ":"98〜120 cm"}},
-  {id:"p04",cat:"wallet",show:"bordeaux",name:"コンパクト ウォレット 三つ折り",price:39600,colors:["noir","taupe","cognac","bordeaux","navy","rose","forest","amber"],tags:["gift"],
+  {id:"p04",sub:"compact",cat:"wallet",show:"bordeaux",name:"コンパクト ウォレット 三つ折り",price:39600,sale:31680,colors:["noir","taupe","cognac","bordeaux","navy","rose","forest","amber"],tags:["gift"],
    desc:"手のひらに収まる三つ折り財布。小銭入れはボックス型で中身が見やすい作りです。",spec:{"サイズ":"W10 × H8.5 × D3 cm","カード":"6枚","素材":"牛革（シュリンクレザー）"}},
-  {id:"p05",cat:"wallet",show:"navy",name:"ロングウォレット ラウンドファスナー",price:58300,colors:["noir","cognac","navy","greige"],tags:[],
+  {id:"p05",sub:"long",cat:"wallet",show:"navy",name:"ロングウォレット ラウンドファスナー",price:58300,colors:["noir","cognac","navy","greige"],tags:[],
    desc:"お札を折らずに入れられる長財布。カード12枚、ポケット4か所。",spec:{"サイズ":"W19.5 × H10 × D2.5 cm","カード":"12枚","素材":"牛革"}},
-  {id:"p06",cat:"small",show:"olive",name:"キーケース 4連 スナップボタン",price:19800,colors:["noir","taupe","cognac","bordeaux","olive","sky"],tags:["gift"],
+  {id:"p06",sub:"key",cat:"small",show:"olive",name:"キーケース 4連 スナップボタン",price:19800,colors:["noir","taupe","cognac","bordeaux","olive","sky"],tags:["gift"],
    desc:"鍵4本とスマートキーが入るキーケース。外側にカードポケット付き。",spec:{"サイズ":"W7 × H11 × D2 cm","フック":"4連","素材":"牛革"}},
-  {id:"p07",cat:"small",show:"rose",name:"マグネット カードケース（ワンカラー）",price:13200,colors:["noir","taupe","greige","rose","forest","amber"],tags:["new","gift"],
+  {id:"p07",sub:"card",cat:"small",show:"rose",name:"マグネット カードケース（ワンカラー）",price:13200,sale:11880,colors:["noir","taupe","greige","rose","forest","amber"],tags:["new","gift"],
    desc:"スマホの背面にMagSafeで付けられるカードケース。カード2枚まで。",spec:{"サイズ":"W64 × H96 × D6 mm","収納":"カード2枚","素材":"牛革"}},
-  {id:"p08",cat:"case",show:"noir",name:"(Galaxy S26) ベルト付き手帳型ケース",price:26400,colors:["noir","cognac","navy"],tags:[],soldout:true,
+  {id:"p08",sub:"android",cat:"case",show:"noir",name:"(Galaxy S26) ベルト付き手帳型ケース",price:26400,colors:["noir","cognac","navy"],tags:[],soldout:true,
    desc:"ベルトで開きにくく、スタンドにもなる手帳型ケース。",spec:{"サイズ":"W80 × H158 × D17 mm","素材":"牛革","対応":"Galaxy S26"}},
-  {id:"p09",cat:"small",show:"greige",name:"Apple Watch バンド 41/42mm",price:17600,colors:["noir","taupe","cognac","bordeaux","navy","greige","rose","forest"],tags:[],
+  {id:"p09",sub:"watch",cat:"small",show:"greige",name:"Apple Watch バンド 41/42mm",price:17600,sale:14080,colors:["noir","taupe","cognac","bordeaux","navy","greige","rose","forest"],tags:[],
    desc:"裏面に汗に強いラバーを貼ったレザーバンド。ラグはシルバー・ゴールドから選べます。",spec:{"対応":"41 / 42 mm","手首周り":"140〜190 mm","素材":"牛革・ラバー"}},
-  {id:"p10",cat:"bag",v:"cross",show:"forest",name:"ロワ クロスボディ シュリンクレザー",price:132000,sale:118800,colors:["noir","taupe","forest"],tags:["new"],
+  {id:"p10",sub:"cross",cat:"bag",v:"cross",show:"forest",name:"ロワ クロスボディ シュリンクレザー",price:132000,sale:118800,colors:["noir","taupe","forest"],tags:["new"],
    desc:"体に沿うカーブをつけたクロスボディ。前面ポケットに交通系ICカードを入れられます。",spec:{"サイズ":"W25 × H18 × D8 cm","重さ":"約540 g","素材":"牛革（シュリンクレザー）"}},
-  {id:"p11",cat:"wallet",show:"sky",name:"フラグメントケース L字ファスナー",price:22000,colors:["noir","taupe","ivory","rose","sky","amber"],tags:["gift"],
+  {id:"p11",sub:"fragment",cat:"wallet",show:"sky",name:"フラグメントケース L字ファスナー",price:22000,sale:19800,colors:["noir","taupe","ivory","rose","sky","amber"],tags:["gift"],
    desc:"カードとお札と小銭をまとめる薄型ケース。キャッシュレス派の方に。",spec:{"サイズ":"W11 × H8 × D1.2 cm","カード":"4枚","素材":"牛革"}},
-  {id:"p12",cat:"case",show:"amber",name:"(iPhone 17 Pro) ショルダーストラップ付きケース",price:34100,colors:["noir","taupe","greige","bordeaux","olive"],tags:["new"],
+  {id:"p12",sub:"iphone",cat:"case",show:"amber",name:"(iPhone 17 Pro) ショルダーストラップ付きケース",price:34100,colors:["noir","taupe","greige","bordeaux","olive"],tags:["new"],
    desc:"取り外せるストラップ付き。ストラップは長さ調節ができ、ネックストラップにもなります。",spec:{"サイズ":"W78 × H152 × D14 mm","ストラップ":"110〜135 cm","素材":"牛革"}}
 ];
 
@@ -425,69 +577,201 @@ function art(cat, colorKey, variant){
   const sheen = "";
   return `<svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${CATS[cat]}（${COLORS[colorKey][0]}）">${defs}${floor}${s}${sheen}</svg>`;
 }
-/* hero: a small still life — tote behind, wallet and key case in front */
-document.getElementById("heroArt").innerHTML = `<div class="stage"></div>
-  <svg viewBox="0 0 800 520" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-    <svg x="150" y="0" width="420" height="525" viewBox="0 0 400 500">${art("bag","cognac").replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg>
-    <svg x="420" y="170" width="300" height="375" viewBox="0 0 400 500">${art("wallet","bordeaux").replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg>
-    <svg x="70" y="210" width="240" height="300" viewBox="0 0 400 500">${art("small","forest").replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg>
-  </svg>`;
+/* ---------- sub-categories (mega menu / mobile menu) ---------- */
+const SUBS = {
+  case:{iphone:"iPhone ケース", android:"Android ケース"},
+  bag:{tote:"トートバッグ", shoulder:"ショルダーバッグ", cross:"クロスボディ"},
+  wallet:{compact:"三つ折り・コンパクト", long:"長財布", fragment:"フラグメントケース"},
+  small:{key:"キーケース", card:"カードケース", watch:"Apple Watch バンド"}
+};
+const TAGS = {new:"新作", sale:"セール", gift:"ギフト"};
+
+/* ---------- scenes: several drawings placed on one canvas (slides, popup) ---------- */
+const inner = svg => svg.replace(/^<svg[^>]*>|<\/svg>$/g,"");
+const SCENES = [
+  [["bag","cognac",null,150,0,420],["wallet","bordeaux",null,420,170,300],["small","forest",null,70,210,240]],
+  [["bag","ivory","shoulder",170,10,420],["small","rose",null,470,190,250],["wallet","sky",null,40,210,280]],
+  [["wallet","taupe",null,250,120,320],["small","amber",null,90,150,250],["small","navy",null,500,170,230]]
+];
+function scene(items){
+  return `<div class="stage"></div><svg viewBox="0 0 800 520" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${
+    items.map(([cat,color,v,x,y,w])=>`<svg x="${x}" y="${y}" width="${w}" height="${w*1.25}" viewBox="0 0 400 500">${inner(art(cat,color,v))}</svg>`).join("")}</svg>`;
+}
+document.querySelectorAll("[data-scene]").forEach(el=>{ el.innerHTML = scene(SCENES[el.dataset.scene]); });
 
 /* ---------- state ---------- */
 const yen = n => "¥" + n.toLocaleString("ja-JP");
-const state = {cat:"all", tag:null, q:"", sort:"new"};
+const state = {cat:"all", sub:null, tag:null, max:null, q:"", sort:"new"};
 let cart = [];
 try{ cart = JSON.parse(localStorage.getItem("kohaku-cart")||"[]") }catch(e){ cart=[] }
 const save = () => { try{ localStorage.setItem("kohaku-cart", JSON.stringify(cart)) }catch(e){} };
 const priceOf = p => p.sale ?? p.price;
+const pct = p => Math.round((1 - p.sale/p.price)*100);
+const cardColor = {};   // colour picked on a card's swatches → used by the card and the product dialog
+
+const modal = document.getElementById("modal"), scrim = document.getElementById("scrim");
+const drawer = document.getElementById("drawer"), menu = document.getElementById("menu");
+const promo = document.getElementById("promo"), mega = document.getElementById("mega");
+const header = document.querySelector("header.site");
+
+/* ---------- cards ---------- */
+function flagOf(p){
+  return p.soldout?`<span class="flag soldout">SOLD OUT</span>`
+    : p.sale?`<span class="flag sale">SALE −${pct(p)}%</span>`
+    : p.tags.includes("new")?`<span class="flag">NEW</span>`:"";
+}
+function priceHTML(p, size){
+  const fs = size?`font-size:${size}px;`:"";
+  return p.sale
+    ? `<span class="yen" style="${fs}color:var(--sale)">${yen(p.sale)}</span> <s class="yen" style="color:var(--muted);font-size:12px">${yen(p.price)}</s>`
+    : `<span class="yen" style="${fs}">${yen(p.price)}</span>`;
+}
+function cardHTML(p){
+  const col = cardColor[p.id] || p.show;
+  const sw = p.colors.slice(0,6).map(k=>`<button class="sw" data-sw="${p.id}" data-c="${k}" aria-pressed="${k===col}" aria-label="${COLORS[k][0]}に切り替え" title="${COLORS[k][0]}" style="background:${COLORS[k][1]}"></button>`).join("");
+  const more = p.colors.length>6?`<span class="more">+${p.colors.length-6}</span>`:"";
+  return `<article class="card" data-card="${p.id}">
+    <button class="card-link" data-open="${p.id}"><div class="thumb">${flagOf(p)}${art(p.cat,col,p.v)}</div><span class="name">${p.name}</span></button>
+    <div class="meta"><span>${priceHTML(p)}</span><span class="swatches">${sw}${more}</span></div></article>`;
+}
+function setCardColor(id, k){
+  if(cardColor[id]===k) return;
+  cardColor[id] = k; const p = P.find(x=>x.id===id);
+  document.querySelectorAll(`[data-card="${id}"]`).forEach(c=>{
+    c.querySelector(".thumb").innerHTML = flagOf(p) + art(p.cat,k,p.v);
+    c.querySelectorAll("[data-sw]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.c===k));
+  });
+}
 
 /* ---------- chips & grid ---------- */
-const chipDefs = [["all","すべて"],...Object.entries(CATS),["gift","ギフト"]];
+const chipDefs = [["all","すべて"],...Object.entries(CATS),["sale","セール"],["gift","ギフト"]];
 function renderChips(){
-  document.getElementById("chips").innerHTML = chipDefs.map(([k,v])=>{
-    const on = k==="gift" ? state.tag==="gift" : (state.tag==null && state.cat===k);
+  const chips = chipDefs.map(([k,v])=>{
+    const on = k in TAGS ? state.tag===k : (!state.tag && !state.sub && !state.max && state.cat===k);
     return `<button class="chip" data-chip="${k}" aria-pressed="${on}">${v}</button>`}).join("");
+  const extra = [];
+  if(state.cat!=="all" && (state.sub||state.tag||state.max)) extra.push(CATS[state.cat] + (state.sub?` › ${SUBS[state.cat][state.sub]}`:""));
+  if(state.tag && (state.tag==="new" || state.cat!=="all")) extra.push(TAGS[state.tag]);
+  if(state.max) extra.push(`${yen(state.max)}以下`);
+  document.getElementById("chips").innerHTML = chips +
+    (extra.length?`<span class="active-filter">${extra.join(" ／ ")}<button data-clear aria-label="絞り込みを解除">✕</button></span>`:"");
 }
-function renderGrid(){
-  let list = P.filter(p => (state.cat==="all"||p.cat===state.cat) && (!state.tag||p.tags.includes(state.tag))
-    && (!state.q || (p.name+CATS[p.cat]).toLowerCase().includes(state.q.toLowerCase())));
+function filtered(){
+  let list = P.filter(p => (state.cat==="all"||p.cat===state.cat) && (!state.sub||p.sub===state.sub)
+    && (!state.tag || (state.tag==="sale" ? !!p.sale : p.tags.includes(state.tag)))
+    && (!state.max || priceOf(p)<=state.max)
+    && (!state.q || (p.name+CATS[p.cat]+(SUBS[p.cat][p.sub]||"")).toLowerCase().includes(state.q.toLowerCase())));
   if(state.sort==="low") list=[...list].sort((a,b)=>priceOf(a)-priceOf(b));
   if(state.sort==="high") list=[...list].sort((a,b)=>priceOf(b)-priceOf(a));
-  const g = document.getElementById("grid");
-  if(!list.length){ g.innerHTML = `<p class="empty">「${state.q}」に合う商品が見つかりません。別のキーワードでお試しください。</p>`; return; }
-  g.innerHTML = list.map(p=>{
-    const flag = p.soldout?`<span class="flag soldout">SOLD OUT</span>`: p.sale?`<span class="flag sale">HOLIDAY −10%</span>`: p.tags.includes("new")?`<span class="flag">NEW</span>`:"";
-    const sw = p.colors.slice(0,5).map(k=>`<span class="sw" style="background:${COLORS[k][1]}" title="${COLORS[k][0]}"></span>`).join("");
-    const more = p.colors.length>5?`<span class="more">+${p.colors.length-5}</span>`:"";
-    const price = p.sale?`<span class="yen" style="color:var(--sale)">${yen(p.sale)}</span> <s class="yen" style="color:var(--muted);font-size:12px">${yen(p.price)}</s>`:`<span class="yen">${yen(p.price)}</span>`;
-    return `<button class="card" data-open="${p.id}"><div class="thumb">${flag}${art(p.cat,p.show,p.v)}</div>
-      <span class="name">${p.name}</span><span class="meta"><span>${price}</span><span class="swatches">${sw}${more}</span></span></button>`}).join("");
+  return list;
+}
+function renderGrid(){
+  const list = filtered(), g = document.getElementById("grid");
+  document.getElementById("count").textContent = `${list.length}点`;
+  g.innerHTML = list.length ? list.map(cardHTML).join("")
+    : `<p class="empty">${state.q?`「${state.q}」に`:"この条件に"}合う商品が見つかりません。別のキーワードや条件でお試しください。</p>`;
+}
+function renderRail(){ document.getElementById("rail").innerHTML = P.filter(p=>p.sale).map(cardHTML).join(""); }
+function go(cat="all", sub=null, tag=null, max=null){
+  Object.assign(state,{cat,sub,tag,max});
+  renderChips(); renderGrid(); closeMega(); closeAll();
+  document.getElementById("shop").scrollIntoView({behavior:"smooth"});
 }
 
+/* ---------- mega menu (desktop) ---------- */
+let megaCat = null;
+function openMega(cat){
+  if(megaCat===cat) return; megaCat = cat;
+  const items = P.filter(p=>p.cat===cat);
+  const picks = [...items.filter(p=>p.tags.includes("new")), ...items.filter(p=>!p.tags.includes("new"))].slice(0,2);
+  mega.innerHTML = `<div class="wrap">
+    <div><h4 class="eyebrow">種類から探す</h4><ul>
+      ${Object.entries(SUBS[cat]).map(([k,v])=>`<li><button class="lk" data-go="${cat}|${k}">${v}<span class="n">${items.filter(p=>p.sub===k).length}</span></button></li>`).join("")}
+      <li><button class="lk strong" data-go="${cat}">${CATS[cat]}をすべて見る →</button></li></ul></div>
+    <div><h4 class="eyebrow">特集</h4><ul>
+      <li><button class="lk" data-go="${cat}||new">新作</button></li>
+      <li><button class="lk" data-go="${cat}||sale">セール対象</button></li>
+      <li><button class="lk" data-go="${cat}||gift">ギフトにおすすめ</button></li></ul></div>
+    <div class="tiles">${picks.map(p=>`<button class="tile" data-open="${p.id}"><div class="thumb">${flagOf(p)}${art(p.cat,p.show,p.v)}</div><span>${p.name}</span><span class="yen">${yen(priceOf(p))}</span></button>`).join("")}</div>
+  </div>`;
+  mega.hidden = false;
+  document.querySelectorAll("[data-mega]").forEach(b=>b.setAttribute("aria-expanded", b.dataset.mega===cat));
+}
+function closeMega(){
+  megaCat = null; mega.hidden = true;
+  document.querySelectorAll("[data-mega]").forEach(b=>b.setAttribute("aria-expanded","false"));
+}
+document.querySelectorAll("nav.main button").forEach(b=>{
+  b.addEventListener("mouseenter", ()=> b.dataset.mega ? openMega(b.dataset.mega) : closeMega());
+  b.addEventListener("focus", ()=> b.dataset.mega ? openMega(b.dataset.mega) : closeMega());
+});
+header.addEventListener("mouseleave", closeMega);
+header.addEventListener("focusout", e=>{ if(!header.contains(e.relatedTarget)) closeMega(); });
+
+/* ---------- mobile menu ---------- */
+document.getElementById("mnav").innerHTML =
+  `<button class="plain" data-go="all||new">新作</button>` +
+  Object.entries(CATS).map(([c,v])=>`<details><summary>${v}</summary>${
+    Object.entries(SUBS[c]).map(([k,s])=>`<button class="lk" data-go="${c}|${k}">${s}</button>`).join("")
+  }<button class="lk" data-go="${c}">${v}をすべて見る</button></details>`).join("") +
+  `<button class="plain" data-go="all||gift">ギフト</button><button class="plain hl" data-go="all||sale">セール</button>
+   <button class="plain" data-scroll="stores">店舗</button><button class="plain" data-scroll="services">サービス・修理</button>`;
+function openPanel(el){ closeAll(); el.classList.add("open"); el.setAttribute("aria-hidden","false"); scrim.hidden=false; }
+document.getElementById("openMenu").onclick = ()=>openPanel(menu);
+
+/* ---------- slideshow ---------- */
+const slides = [...document.querySelectorAll(".slide")], dots = document.getElementById("dots");
+let si = 0, timer = null, paused = matchMedia("(prefers-reduced-motion: reduce)").matches, hover = false;
+dots.innerHTML = slides.map((_,i)=>`<button data-slide="${i}" aria-label="スライド ${i+1}"></button>`).join("") +
+  `<button class="pause" id="pauseBtn"></button>`;
+const pauseBtn = document.getElementById("pauseBtn");
+function showSlide(i){
+  si = (i+slides.length)%slides.length;
+  slides.forEach((s,k)=>s.hidden = k!==si);
+  dots.querySelectorAll("[data-slide]").forEach((d,k)=>d.setAttribute("aria-current", k===si));
+}
+function play(){
+  clearInterval(timer);
+  pauseBtn.textContent = paused ? "▶" : "❚❚";
+  pauseBtn.setAttribute("aria-label", paused ? "スライドを再生" : "スライドを一時停止");
+  if(!paused && !hover) timer = setInterval(()=>showSlide(si+1), 6000);
+}
+pauseBtn.onclick = ()=>{ paused=!paused; play(); };
+const slidesEl = document.querySelector(".slides");
+slidesEl.addEventListener("mouseenter", ()=>{ hover=true; play(); });
+slidesEl.addEventListener("mouseleave", ()=>{ hover=false; play(); });
+showSlide(0); play();
+
 /* ---------- product modal ---------- */
-const modal = document.getElementById("modal"), scrim = document.getElementById("scrim");
 let current = null;
 function openProduct(id){
-  const p = P.find(x=>x.id===id); current = {p, color:p.show};
+  const p = P.find(x=>x.id===id); current = {p, color: cardColor[id] || p.show};
   modal.innerHTML = `<div class="dialog">
     <button class="close" data-close aria-label="閉じる">✕</button>
     <div class="art" id="mArt">${art(p.cat,current.color,p.v)}</div>
     <div class="body">
-      <span class="eyebrow">${CATS[p.cat]}</span>
+      <span class="eyebrow">${CATS[p.cat]}${p.sub?` ／ ${SUBS[p.cat][p.sub]}`:""}</span>
       <h3 id="mTitle">${p.name}</h3>
-      <div>${p.sale?`<span class="yen" style="font-size:20px;color:var(--sale)">${yen(p.sale)}</span> <s class="yen" style="color:var(--muted)">${yen(p.price)}</s>`:`<span class="yen" style="font-size:20px">${yen(p.price)}</span>`} <small style="color:var(--muted)">（税込）</small></div>
+      <div>${priceHTML(p,20)} <small style="color:var(--muted)">（税込）</small>${p.sale?` <span class="flag sale" style="position:static">SALE −${pct(p)}%</span>`:""}</div>
       <p class="desc">${p.desc}</p>
       <div><div class="opt-label"><span>カラー</span><span id="mColor">${COLORS[current.color][0]}</span></div>
-        <div class="colors" style="margin-top:8px">${p.colors.map((k,i)=>`<button data-color="${k}" aria-pressed="${k===p.show}" aria-label="${COLORS[k][0]}" style="background:${COLORS[k][1]}"></button>`).join("")}</div></div>
+        <div class="colors" style="margin-top:8px">${p.colors.map(k=>`<button data-color="${k}" aria-pressed="${k===current.color}" aria-label="${COLORS[k][0]}" style="background:${COLORS[k][1]}"></button>`).join("")}</div></div>
       <div class="engrave"><label class="check" for="engOn"><input type="checkbox" id="engOn"> イニシャル刻印（無料）</label>
         <input id="engText" maxlength="5" placeholder="例：K.T" hidden aria-label="刻印する文字（英字5文字まで）"></div>
       <label class="check" for="giftOn"><input type="checkbox" id="giftOn"> ギフトラッピング（無料）</label>
       <button class="btn" id="addBtn" ${p.soldout?"disabled style='opacity:.5;cursor:not-allowed'":""}>${p.soldout?"在庫切れ（入荷待ち）":"カートに入れる"}</button>
       <dl class="dl">${Object.entries(p.spec).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}<dt>発送</dt><dd>1〜3営業日以内</dd></dl>
     </div></div>`;
+  closeAll(); closeMega();
   modal.hidden=false; scrim.hidden=false; modal.querySelector(".close").focus();
 }
-function closeAll(){ modal.hidden=true; drawer.classList.remove("open"); drawer.setAttribute("aria-hidden","true"); scrim.hidden=true; }
+const markPromoSeen = () => { try{ localStorage.setItem("kohaku-promo","1") }catch(e){} };
+function closeAll(){
+  if(!promo.hidden) markPromoSeen();
+  modal.hidden=true; promo.hidden=true;
+  [drawer,menu].forEach(d=>{ d.classList.remove("open"); d.setAttribute("aria-hidden","true"); });
+  scrim.hidden=true;
+}
 modal.addEventListener("click", e=>{
   if(e.target===modal || e.target.closest("[data-close]")) return closeAll();
   const cb = e.target.closest("[data-color]");
@@ -499,19 +783,22 @@ modal.addEventListener("click", e=>{
     const key = [current.p.id,current.color,eng,gift].join("|");
     const ex = cart.find(l=>l.key===key);
     ex ? ex.qty++ : cart.push({key,id:current.p.id,color:current.color,eng,gift,qty:1});
-    save(); renderCart(); closeAll(); openCart(); toast("カートに追加しました");
+    save(); renderCart(); openPanel(drawer); toast("カートに追加しました");
   }
 });
 modal.addEventListener("change", e=>{ if(e.target.id==="engOn"){ const t=document.getElementById("engText"); t.hidden=!e.target.checked; if(!t.hidden) t.focus(); }});
 
 /* ---------- cart ---------- */
-const drawer = document.getElementById("drawer");
 const FREE = 22000, SHIP = 880;
 function renderCart(){
   const n = cart.reduce((s,l)=>s+l.qty,0);
   const b = document.getElementById("cartCount"); b.textContent=n; b.dataset.n=n;
   const lines = document.getElementById("lines"), totals = document.getElementById("totals");
-  if(!cart.length){ lines.innerHTML=`<p style="color:var(--muted);text-align:center;padding-top:40px">カートに商品はありません。<br>気になる商品を選んで「カートに入れる」を押してください。</p>`; totals.innerHTML=""; return; }
+  if(!cart.length){
+    lines.innerHTML=`<p style="color:var(--muted);text-align:center;padding-top:40px">カートに商品はありません。<br>気になる商品を選んで「カートに入れる」を押してください。</p>
+      <button class="btn ghost" data-close-cart style="justify-self:center">買い物を続ける</button>`;
+    totals.innerHTML=""; return;
+  }
   lines.innerHTML = cart.map((l,i)=>{ const p=P.find(x=>x.id===l.id);
     return `<div class="line"><div class="mini">${art(p.cat,l.color,p.v)}</div><div class="info">
       <span>${p.name}</span><span class="opts">${COLORS[l.color][0]}${l.eng?` ／ 刻印「${l.eng}」`:""}${l.gift?" ／ ギフト包装":""}</span>
@@ -526,11 +813,12 @@ function renderCart(){
     <div class="r"><span>小計</span><span class="yen">${yen(sub)}</span></div>
     <div class="r"><span>送料</span><span class="yen">${ship?yen(ship):"無料"}</span></div>
     <div class="r grand"><span>合計（税込）</span><span class="yen">${yen(sub+ship)}</span></div>
-    <button class="btn" id="checkout" style="margin-top:8px">ご購入手続きへ</button>`;
+    <button class="btn" id="checkout" style="margin-top:8px">ご購入手続きへ</button>
+    <button class="linkbtn" data-close-cart style="justify-self:center">買い物を続ける</button>`;
 }
-function openCart(){ drawer.classList.add("open"); drawer.setAttribute("aria-hidden","false"); scrim.hidden=false; }
 drawer.addEventListener("click", e=>{
   const t=e.target; let i;
+  if(t.closest("[data-close-cart]")) return closeAll();
   if((i=t.dataset.inc)!=null) cart[i].qty++;
   else if((i=t.dataset.dec)!=null){ cart[i].qty--; if(!cart[i].qty) cart.splice(i,1); }
   else if((i=t.dataset.rm)!=null) cart.splice(i,1);
@@ -538,26 +826,45 @@ drawer.addEventListener("click", e=>{
   else return;
   save(); renderCart();
 });
-document.getElementById("openCart").onclick=openCart;
+document.getElementById("openCart").onclick=()=>openPanel(drawer);
 document.getElementById("closeCart").onclick=closeAll;
 scrim.onclick=closeAll;
-document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeAll(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeAll(); closeMega(); } });
 
-/* ---------- filters & misc ---------- */
+/* ---------- newsletter coupon popup (once per browser) ---------- */
+promo.addEventListener("click", e=>{ if(e.target===promo || e.target.closest("[data-close-promo]")) closeAll(); });
+document.getElementById("promoForm").addEventListener("submit", e=>{ e.preventDefault(); e.target.reset(); closeAll(); toast("登録を受け付けました（デモのため送信はされません）"); });
+function showPromo(){
+  let seen = false; try{ seen = localStorage.getItem("kohaku-promo")==="1" }catch(e){}
+  if(seen) return;
+  if(!scrim.hidden) return setTimeout(showPromo, 10000);   // another panel is open: try again later
+  promo.hidden=false; scrim.hidden=false;
+}
+setTimeout(showPromo, 6000);
+
+/* ---------- global clicks: filters, swatches, navigation ---------- */
 document.addEventListener("click", e=>{
-  const c=e.target.closest("[data-chip]");
-  if(c){ const k=c.dataset.chip; if(k==="gift"){state.tag="gift";state.cat="all"} else {state.tag=null;state.cat=k} renderChips(); renderGrid(); }
-  const o=e.target.closest("[data-open]"); if(o) openProduct(o.dataset.open);
-  const j=e.target.closest("[data-jump]");
-  if(j){ state.cat=j.dataset.jump; state.tag=null; renderChips(); renderGrid(); document.getElementById("shop").scrollIntoView({behavior:"smooth"}); }
-  const ft=e.target.closest("[data-filter-tag]");
-  if(ft){ state.tag=ft.dataset.filterTag; state.cat="all"; renderChips(); renderGrid(); document.getElementById("shop").scrollIntoView({behavior:"smooth"}); }
+  const t = e.target;
+  if(t.closest("[data-close-menu]")) return closeAll();
+  const c = t.closest("[data-chip]");
+  if(c){ const k=c.dataset.chip; Object.assign(state, k in TAGS ? {cat:"all",sub:null,tag:k,max:null} : {cat:k,sub:null,tag:null,max:null}); renderChips(); renderGrid(); return; }
+  if(t.closest("[data-clear]")){ Object.assign(state,{cat:"all",sub:null,tag:null,max:null}); renderChips(); renderGrid(); return; }
+  const sw = t.closest("[data-sw]"); if(sw) return setCardColor(sw.dataset.sw, sw.dataset.c);
+  const o = t.closest("[data-open]"); if(o) return openProduct(o.dataset.open);
+  const g = t.closest("[data-go]");
+  if(g){ const [cat,sub,tag,max] = g.dataset.go.split("|"); return go(cat||"all", sub||null, tag||null, max?+max:null); }
+  const sc = t.closest("[data-scroll]");
+  if(sc){ closeMega(); closeAll(); return document.getElementById(sc.dataset.scroll).scrollIntoView({behavior:"smooth"}); }
+  const r = t.closest("[data-rail]");
+  if(r){ const rail=document.getElementById("rail"); return rail.scrollBy({left:r.dataset.rail*rail.clientWidth*.8, behavior:"smooth"}); }
+  const d = t.closest("[data-slide]"); if(d){ showSlide(+d.dataset.slide); play(); }
 });
+document.addEventListener("mouseover", e=>{ const sw=e.target.closest("[data-sw]"); if(sw) setCardColor(sw.dataset.sw, sw.dataset.c); });
 document.getElementById("q").addEventListener("input", e=>{ state.q=e.target.value.trim(); renderGrid(); });
 document.getElementById("q").addEventListener("keydown", e=>{ if(e.key==="Enter") document.getElementById("shop").scrollIntoView({behavior:"smooth"}); });
 document.getElementById("sort").addEventListener("change", e=>{ state.sort=e.target.value; renderGrid(); });
 document.getElementById("newsForm").addEventListener("submit", e=>{ e.preventDefault(); e.target.reset(); toast("登録を受け付けました（デモのため送信はされません）"); });
 let tt; function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),2400); }
 
-renderChips(); renderGrid(); renderCart();
+renderChips(); renderGrid(); renderRail(); renderCart();
 </script>
