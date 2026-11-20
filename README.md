@@ -15,4 +15,6 @@ node .claude/serve.js
 http://localhost:5178 を開きます。公開時と同じ枠（doctype・viewport など）を付けて表示します。
 
 ## 公開ページ
-Claude の Artifact として公開しています（非公開・共有はページの共有メニューから）。
+- GitHub Pages：https://lib-kunitomi.github.io/kohaku-ec-site/
+  - main に push すると、GitHub Actions（`.github/workflows/pages.yml`）が `scripts/build.js` で `_site/index.html` を作って自動で公開します。
+- Claude の Artifact としても公開しています（非公開・共有はページの共有メニューから）。
